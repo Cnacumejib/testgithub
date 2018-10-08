@@ -11,7 +11,7 @@ namespace CalcMeToo
 {
     public class Room
     {
-        int id = 0;
+        int id;
         int x1 = 0;
         int y1 = 0;
         int x2 = 0;
@@ -22,18 +22,20 @@ namespace CalcMeToo
         Color color = Color.Red;
         List<Device> devices;
 
-        public Room()
+        public Room(int id)
         {
+            this.id = id;
             x1 = 0;
             y1 = 0;
             x2 = 0;
             y2 = 0;
-            color = Color.Yellow;
+            color = Color.Blue;
             devices = new List<Device>();
         }
 
-        public Room(int xLeft, int yTop, int xRight, int yDown, Color color)
+        public Room(int id, int xLeft, int yTop, int xRight, int yDown, Color color)
         {
+            this.id = id;
             x1 = Math.Min(xLeft, xRight);
             y1 = Math.Min(yTop, yDown);
             x2 = Math.Max(xLeft, xRight);
@@ -41,8 +43,7 @@ namespace CalcMeToo
             this.color = color;
             devices = new List<Device>();
         }
-
-
+        
         public int Width
         {
             get
@@ -61,7 +62,7 @@ namespace CalcMeToo
 
         public bool HasInside(int x, int y)
         {
-            if (x >= x1 && x <=x2 && y >= y1 && y <=y2)
+            if (x >= x1 && x <= x2 && y >= y1 && y <= y2)
             {
                 xPickUp = x - x1;
                 yPickUp = y - y1;
@@ -71,6 +72,11 @@ namespace CalcMeToo
             {
                 return false;
             }
+        }
+
+        public bool HasInside(Point point)
+        {            
+            return HasInside(point.X, point.Y);
         }
 
         public IEnumerable<Point> GetVertexes()
@@ -88,20 +94,45 @@ namespace CalcMeToo
             this.color=newColor;
         }
 
+        public void NormilizeXY()
+        {
+            int temp;
+            if (x2 < x1)
+            {
+                temp = x1;
+                x1 = x2;
+                x2 = temp;
+            }
+
+            if (y2 < y1)
+            {
+                temp = y1;
+                y1 = y2;
+                y2 = temp;
+            }
+        }
+
         public void SetPosition1(int xLeft, int yTop)
         {
-            xLeft -= xPickUp;
+            /*xLeft -= xPickUp;
             yTop -= yPickUp;
             if (xLeft < 0) xLeft = 0;
             if (yTop < 0) yTop = 0;
-            x2 = xLeft+x2-x1;
-            y2 = yTop+y2-y1;
+            x2 = xLeft + x2 - x1;
+            y2 = yTop + y2 - y1;*/
             x1 = xLeft;
             y1 = yTop;
         }
 
+        public void SetPosition1(Point point)
+        {
+            x1 = point.X;
+            y1 = point.Y;
+        }
+
         public void SetPosition2(int xRight, int yDown)
         {
+            /*
             if (xRight < x1)
             {
                 x1 = xRight;
@@ -118,7 +149,27 @@ namespace CalcMeToo
             else
             {
                 y2 = yDown;
-            }
+            }*/
+
+            x2 = xRight;
+            y2 = yDown;
+
+        }
+
+        public void SetPosition2(Point point)
+        {
+            x2 = point.X;
+            y2 = point.Y;
+        }
+
+        public Point GetPosition1()
+        {
+            return new Point(x1, y1);
+        }
+
+        public Point GetPosition2()
+        {
+            return new Point(x2, y2);
         }
 
         public void SetSize(int width, int height)

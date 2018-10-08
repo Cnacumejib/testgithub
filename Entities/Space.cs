@@ -10,7 +10,12 @@ namespace CalcMeToo
 {
     public class Space
     {
+        int roomCounter = 0;
+        int deviceCounter = 0;
+        int lineCounter = 0;
+
         int GridStep { get; set; }
+
         int Scale { get; set; }
         int X { get; set; }
         int Y { get; set; }
@@ -19,7 +24,7 @@ namespace CalcMeToo
         int Status { get; set; }
 
         List<Room> rooms = new List<Room>();
-        Room selectedRoom = new Room();
+        Room selectedRoom;// = new Room(-1);
         Bitmap bitmap;
 
         public Space()
@@ -42,9 +47,34 @@ namespace CalcMeToo
             DrawBitmap();
         }
 
+        public Point NormilizeXY(int x, int y)
+        {
+            if (x < 0)
+            {
+                x = 0;
+            }
+
+            if (y < 0)
+            {
+                y = 0;
+            }
+
+            if (x >= Width)
+            {
+                x = Width-1;
+            }
+
+            if (y >= Height)
+            {
+                y = Height-1;
+            }
+            return new Point(x, y);
+        }
+
         public void AddNewRoom()
         {
-            selectedRoom = new Room();
+            roomCounter++;
+            selectedRoom = new Room(roomCounter);
         }
 
         public bool SelectRoomAtPosition(int x, int y)
@@ -84,8 +114,15 @@ namespace CalcMeToo
                 return false;
             }
 
+            Point oldXY1 = selectedRoom.GetPosition1();
             selectedRoom.SetPosition1(x, y);
-            return !HasCrossing(selectedRoom);
+            if (SelectedRoomHasCrossing())
+            {
+                selectedRoom.SetPosition1(oldXY1);
+                return false;
+            }
+
+            return true;
         }
 
         public bool SizeSelectedRoom(int x, int y)
@@ -95,8 +132,15 @@ namespace CalcMeToo
                 return false;
             }
 
+            Point oldXY2 = selectedRoom.GetPosition2();
             selectedRoom.SetPosition2(x, y);
-            return !HasCrossing(selectedRoom);
+            if (SelectedRoomHasCrossing())
+            {
+                selectedRoom.SetPosition2(oldXY2);
+                return false;
+            }
+
+            return true;
         }
 
         public Bitmap GetBitmap()
@@ -108,6 +152,8 @@ namespace CalcMeToo
           
         //  return selectedRoom.DrawNew(bitmap);
             return selectedRoom.DrawNew(bitmap.Clone() as Bitmap);
+         /*   Rectangle dd = new Rectangle();
+            dd.Contains()*/
         }
 
         public bool IsEmptyAt(int x, int y)
@@ -123,11 +169,34 @@ namespace CalcMeToo
             return true;
         }
 
+        public bool SelectedRoomHasCrossing()
+        {
+            foreach (Room room in rooms)
+            {
+                foreach (var vertex in selectedRoom.GetVertexes())
+                {
+                    if (room.HasInside(vertex.X, vertex.Y))
+                    {
+                        return true;
+                    }
+                }
+
+                foreach (var vertex in room.GetVertexes())
+                {
+                    if (selectedRoom.HasInside(vertex.X, vertex.Y))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        /*
         public bool HasCrossing(Room testRoom)
         {
-            foreach (var vertex in testRoom.GetVertexes())
+            foreach (Room room in rooms)
             {
-                foreach (Room room in rooms)
+                foreach (var vertex in testRoom.GetVertexes())
                 {
                     if (room.HasInside(vertex.X, vertex.Y))
                     {
@@ -137,6 +206,7 @@ namespace CalcMeToo
             }
             return false;
         }
+        */
 
         private void DrawBitmap()
         {
