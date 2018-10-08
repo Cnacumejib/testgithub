@@ -11,6 +11,7 @@ namespace CalcMeToo
 {
     public class Room
     {
+        int id = 0;
         int x1 = 0;
         int y1 = 0;
         int x2 = 0;
