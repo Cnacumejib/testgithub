@@ -57,6 +57,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shear.cs" />
     <Compile Include="Space.cs" />
     <Compile Include="Room.cs" />
     <EmbeddedResource Include="Form1.resx">
